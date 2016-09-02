@@ -1,0 +1,20 @@
+{
+    "name": "cbsan/basic-tools",
+    "description": "Basic Tools",
+    "keywords": ["Tools"],
+    "license": "MIT",
+    "authors" : [
+        {
+            "name": "Cristian B. San",
+            "email": "cristian.deveng@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "CBSan\\Tools\\": "src/"
+        }
+    }
+}
