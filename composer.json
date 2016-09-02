@@ -1,6 +1,6 @@
 {
-    "name": "cbsan/basictools",
-    "description": "Basic Tools",
+    "name": "cbsan/tools",
+    "description": "Tools",
     "keywords": ["Tools"],
     "license": "MIT",
     "authors" : [
