@@ -8,7 +8,7 @@ namespace CBSan\Tools;
  *
  * @author Cristian B. Santos <cristian.santos@bludata.com>
  */
-trait BaseObject
+trait AttributesObjectTrait
 {
     /**
      * Retorna os dados contidos na classe requisitada no formato de um array.
@@ -24,24 +24,6 @@ trait BaseObject
 
             return $this->$input();
         }, $inputs));
-    }
-
-    /**
-     * Efetua uma limpeza no input recebido, deixando somente os números.
-     *
-     * @param  $input
-     *
-     * @return string
-     */
-    public function onlyNumber($input)
-    {
-        $input = preg_replace('/\D/i', '', $input);
-
-        if (!is_numeric($input)) {
-            return;
-        }
-
-        return $input;
     }
 
     /**
