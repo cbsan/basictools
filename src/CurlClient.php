@@ -3,72 +3,71 @@
 namespace CBSan\Tools;
 
 /**
- * Ferramenta utilizada para efetuar chamadas http/https via curl
+ * Ferramenta utilizada para efetuar chamadas http/https via curl.
  *
  * @author Cristian B. Santos <cristian.santos@bludata.com>
  */
 class CurlClient
 {
-	private $url;
-	private $uri;
-	private $headers = [];
-	private $timeout = 30;
-	private $opt = [];
-	private $curlInit;
-	private $response;
-	private $info;
+    private $url;
+    private $uri;
+    private $headers = [];
+    private $timeout = 30;
+    private $opt = [];
+    private $curlInit;
+    private $response;
+    private $info;
 
-	public function __construct()
-	{
-		ini_set('default_socket_timeout', $this->getTimeout());
+    public function __construct()
+    {
+        ini_set('default_socket_timeout', $this->getTimeout());
 
-		$this->addOpt(CURLOPT_RETURNTRANSFER, true)
-			 ->addOpt(CURLOPT_FOLLOWLOCATION, true)
-			 ->addOpt(CURLOPT_BINARYTRANSFER, true)
-			 ->addOpt(CURLOPT_HEADER, true)
-			 ->addOpt(CURLOPT_SSL_VERIFYPEER, false)
-			 ->addOpt(CURLOPT_SSL_VERIFYHOST, false);
-	}
+        $this->addOpt(CURLOPT_RETURNTRANSFER, true)
+             ->addOpt(CURLOPT_FOLLOWLOCATION, true)
+             ->addOpt(CURLOPT_BINARYTRANSFER, true)
+             ->addOpt(CURLOPT_HEADER, true)
+             ->addOpt(CURLOPT_SSL_VERIFYPEER, false)
+             ->addOpt(CURLOPT_SSL_VERIFYHOST, false);
+    }
 
-	public function curl()
-	{
-		$this->addOpt(CURLOPT_TIMEOUT, $this->getTimeout())
-			 ->addOpt(CURLOPT_URL, trim($this->getUrl().$this->getUri()))
-			 ->addOpt(CURLOPT_HTTPHEADER, $this->getHeaders());
+    public function curl()
+    {
+        $this->addOpt(CURLOPT_TIMEOUT, $this->getTimeout())
+             ->addOpt(CURLOPT_URL, trim($this->getUrl().$this->getUri()))
+             ->addOpt(CURLOPT_HTTPHEADER, $this->getHeaders());
 
-		$this->curlInit = curl_init();
+        $this->curlInit = curl_init();
 
-		curl_setopt_array($this->curlInit, $this->getOpt());
+        curl_setopt_array($this->curlInit, $this->getOpt());
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function exec()
-	{
-		if (!$this->curlInit) {
-			throw new \Exception("CURL não foi inicializado", 1);
-			
-		}
+    public function exec()
+    {
+        if (!$this->curlInit) {
+            throw new \Exception('CURL não foi inicializado', 1);
+        }
 
-		$this->setResponse(curl_exec($this->curlInit))
-			 ->setInfo(curl_getinfo($this->curlInit));
+        $this->setResponse(curl_exec($this->curlInit))
+             ->setInfo(curl_getinfo($this->curlInit));
 
-		curl_close($this->curlInit);
+        curl_close($this->curlInit);
 
-		return $this;
-	}
+        return $this;
+    }
 
-	private function addOpt($key, $value)
-	{
-		$this->opt[$key] = $value;
+    private function addOpt($key, $value)
+    {
+        $this->opt[$key] = $value;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function getOpt()
-	{
-		return $this->opt;
-	}
+    public function getOpt()
+    {
+        return $this->opt;
+    }
 
     /**
      * Gets the value of url.
@@ -138,6 +137,7 @@ class CurlClient
     public function addHeader($header)
     {
         $this->headers[] = $header;
+
         return $this;
     }
 
@@ -208,15 +208,15 @@ class CurlClient
      */
     private function setResponse($response)
     {
-    	$pos = strpos($response, "\r\n\r\n");
+        $pos = strpos($response, "\r\n\r\n");
 
         $headers = explode("\r\n", substr($response, 0, $pos));
         $body = substr($response, $pos + 4);
 
-        $obj = new \stdClass;
+        $obj = new \stdClass();
         $obj->headers = $headers;
         $obj->body = $body;
-        
+
         $this->response = $obj;
 
         return $this;

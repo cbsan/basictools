@@ -3,7 +3,7 @@
 namespace CBSan\Tools;
 
 /**
- * Ferramenta utilizada para formatar os inputs
+ * Ferramenta utilizada para formatar os inputs.
  *
  * @author Cristian B. Santos <cristian.santos@bludata.com>
  */
