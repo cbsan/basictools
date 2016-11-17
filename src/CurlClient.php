@@ -18,7 +18,7 @@ class CurlClient
     private $response;
     private $info;
 
-    public function __construct()
+    public function curl()
     {
         ini_set('default_socket_timeout', $this->getTimeout());
 
@@ -27,12 +27,8 @@ class CurlClient
              ->addOpt(CURLOPT_BINARYTRANSFER, true)
              ->addOpt(CURLOPT_HEADER, true)
              ->addOpt(CURLOPT_SSL_VERIFYPEER, false)
-             ->addOpt(CURLOPT_SSL_VERIFYHOST, false);
-    }
-
-    public function curl()
-    {
-        $this->addOpt(CURLOPT_TIMEOUT, $this->getTimeout())
+             ->addOpt(CURLOPT_SSL_VERIFYHOST, false)
+             ->addOpt(CURLOPT_TIMEOUT, $this->getTimeout())
              ->addOpt(CURLOPT_URL, trim($this->getUrl().$this->getUri()))
              ->addOpt(CURLOPT_HTTPHEADER, $this->getHeaders());
 
