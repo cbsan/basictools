@@ -9,18 +9,65 @@ namespace CBSan\Tools;
  */
 class CurlClient
 {
-    private $url;
-    private $uri;
-    private $headers = [];
-    private $timeout = 30;
-    private $opt = [];
-    private $curlInit;
-    private $response;
-    private $info;
+    /**
+     * @var constante com metodos suportados pela classe
+     */
+    const ONLY_METHODS = ['GET','POST'];
 
-    public function curl()
+    /**
+     * @var string
+     */
+    protected $url;
+
+    /**
+     * @var string
+     */
+    protected $uri;
+
+    /**
+     * @var array
+     */
+    protected $headers = [];
+
+    /**
+     * @var int
+     */
+    protected $timeout = 30;
+
+    /**
+     * @var array
+     */
+    protected $opt = [];
+
+    /**
+     * @var string
+     */
+    protected $response;
+
+    /**
+     * @var string
+     */
+    protected $info;
+
+    /**
+     * @var string
+     */
+    protected $method = 'GET';
+
+    private function curl()
     {
         ini_set('default_socket_timeout', $this->getTimeout());
+
+        if (in_array($this->getMethod(), ['POST', 'PUT'])) {
+            if ($opt = $this->getOpt()) {
+                $length = strlen($opt[CURLOPT_POSTFIELDS]);
+                $this->addHeader(sprintf('Content-Length: %u', $length));
+            }
+        }
+
+        if ($path = parse_url($this->getUrl())) {
+            $this->addHeader(sprintf('Host: %s', $path['host']));
+        }
 
         $this->addOpt(CURLOPT_RETURNTRANSFER, true)
              ->addOpt(CURLOPT_FOLLOWLOCATION, true)
@@ -32,23 +79,32 @@ class CurlClient
              ->addOpt(CURLOPT_URL, trim($this->getUrl().$this->getUri()))
              ->addOpt(CURLOPT_HTTPHEADER, $this->getHeaders());
 
-        $this->curlInit = curl_init();
+        $curl = curl_init();
 
-        curl_setopt_array($this->curlInit, $this->getOpt());
+        curl_setopt_array($curl, $this->getOpt());
 
-        return $this;
+        return $curl;
     }
 
     public function exec()
     {
-        if (!$this->curlInit) {
+        if (!$curl = $this->curl()) {
             throw new \Exception('CURL não foi inicializado', 1);
         }
 
-        $this->setResponse(curl_exec($this->curlInit))
-             ->setInfo(curl_getinfo($this->curlInit));
+        $this->setResponse(curl_exec($curl))
+             ->setInfo(curl_getinfo($curl));
 
-        curl_close($this->curlInit);
+        curl_close($curl);
+
+        return $this;
+    }
+
+    public function post($post)
+    {
+        $this->setMethod('POST')
+             ->addOpt(CURLOPT_POST, true)
+             ->addOpt(CURLOPT_POSTFIELDS, $post);
 
         return $this;
     }
@@ -214,6 +270,68 @@ class CurlClient
         $obj->body = $body;
 
         $this->response = $obj;
+
+        return $this;
+    }
+
+
+    public function getStatusCode()
+    {
+        if (!$info = $this->getInfo()) {
+            return null;
+        }
+
+        return isset($info['http_code']) ? $info['http_code'] : null;
+    }
+
+    /**
+     * Gets the value of method.
+     *
+     * @return mixed
+     */
+    public function getMethod()
+    {
+        return strtoupper($this->method);
+    }
+
+    /**
+     * Sets the value of method.
+     *
+     * @param mixed $method the method
+     *
+     * @return self
+     */
+    public function setMethod($method)
+    {
+        $this->method = $method;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of headers.
+     *
+     * @param mixed $headers the headers
+     *
+     * @return self
+     */
+    protected function setHeaders($headers)
+    {
+        $this->headers = $headers;
+
+        return $this;
+    }
+
+    /**
+     * Sets the value of opt.
+     *
+     * @param mixed $opt the opt
+     *
+     * @return self
+     */
+    protected function setOpt($opt)
+    {
+        $this->opt = $opt;
 
         return $this;
     }
