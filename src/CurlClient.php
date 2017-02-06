@@ -10,11 +10,6 @@ namespace CBSan\Tools;
 class CurlClient
 {
     /**
-     * @var constante com metodos suportados pela classe
-     */
-    const ONLY_METHODS = ['GET','POST'];
-
-    /**
      * @var string
      */
     protected $url;
